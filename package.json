@@ -1,0 +1,13 @@
+{
+  "name" : "uber-clone" ,
+  "description" : "This is my project where i am cloning uber." ,
+  "createdBy" : "SyedMaazAliShah (LoveKnight)" ,
+  "scripts" : {
+    "front" : " cd frontend && npx vite --host " ,
+    "back" : " cd backend && npx nodemon" ,
+    "both" : "npx concurrently -c \"blue,green\" \"cd frontend && npx vite --host\" \"cd backend && npx nodemon\" " 
+  },
+  "dependencies" : {
+    "concurrently" : "^10.0.3"
+  }
+}

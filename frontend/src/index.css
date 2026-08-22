@@ -1,0 +1,12 @@
+@import 'tailwindcss';
+
+* {
+	box-sizing: border-box !important;
+}
+
+
+.border-all-in {
+	* {
+		border : 1px dotted black ;
+	}
+}
