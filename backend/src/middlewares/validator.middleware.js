@@ -30,6 +30,7 @@ let options = {
  * @returns the condition of validity.
  */
 export function isLength ( string , { equal, min, max } ) {
+    string = String( string ) ;
     if (!string) {
         return Error("Enter String to Validate");
     }
@@ -231,4 +232,33 @@ export async function CaptainLogin ( req , res , next ) {
     req.validationCompleted = true ;
 
     return next() ;
+}
+
+// ---------------------------------------------------------------
+
+
+export async function Ride_Create ( req , res , next ) {
+
+    const { userID , pickup , destination } = req.body ;
+
+    if  ( !userID || !pickup || !destination ) {
+        return res.json({success: false , message : "userID , pickup Location & Destination are Required for Making a Ride" })
+    }
+
+    if ( !userID || !isLength( userID , { min : 24 , max : 24 } ) ) {
+        return res.json( { succes : false , message : "Invalid User ID." } )
+    } 
+
+    if ( !pickup || !isLength( pickup , { min : 3} ) ) {
+        return res.json( { succes : false , message : "Invalid Pickup Point." } )
+    }
+
+    if ( !destination || !isLength( destination , { min : 3 } ) ) {
+        return res.json( { succes : false , message : "Invalid Drop Point." } )
+    }
+
+    req.validationCompleted = true ;
+
+    return next()
+
 }
