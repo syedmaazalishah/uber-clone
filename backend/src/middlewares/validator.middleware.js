@@ -239,15 +239,11 @@ export async function CaptainLogin ( req , res , next ) {
 
 export async function Ride_Create ( req , res , next ) {
 
-    const { userID , pickup , destination } = req.body ;
+    const { pickup , destination , selectedRide } = req.body ;
 
-    if  ( !userID || !pickup || !destination ) {
-        return res.json({success: false , message : "userID , pickup Location & Destination are Required for Making a Ride" })
+    if  ( !pickup || !destination || !selectedRide ) {
+        return res.json({success: false , message : "Pickup, Destination and RideType are Required for Making a Ride" })
     }
-
-    if ( !userID || !isLength( userID , { min : 24 , max : 24 } ) ) {
-        return res.json( { succes : false , message : "Invalid User ID." } )
-    } 
 
     if ( !pickup || !isLength( pickup , { min : 3} ) ) {
         return res.json( { succes : false , message : "Invalid Pickup Point." } )
@@ -255,6 +251,10 @@ export async function Ride_Create ( req , res , next ) {
 
     if ( !destination || !isLength( destination , { min : 3 } ) ) {
         return res.json( { succes : false , message : "Invalid Drop Point." } )
+    }
+
+    if ( !selectedRide || !isIn(selectedRide,['rikshaw','motorcycle','car']) ) {
+        return res.json( { success : false , message : "Invalid Ride Type." })
     }
 
     req.validationCompleted = true ;
