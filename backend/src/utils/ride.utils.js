@@ -1,5 +1,6 @@
 import Ride from '../models/ride.model.js';
 import { get_Distance_Time } from '../services/maps.google.services'
+import crypto from 'crypto'
 
 async function calculateFare ( origin , destination ) {
 
@@ -28,13 +29,20 @@ async function calculateFare ( origin , destination ) {
     }
     
     const fares = {
-        rikshaw : baseFare.rikshaw + (distanceTime.distance/1000 * perKM.rikshaw) + (distanceTime.time * perMinute.rikshaw) ,
-        car : baseFare.car + (distanceTime.distance/1000 * perKM.car) + (distanceTime.time * perMinute.car) ,
-        motorcycle : baseFare.motorcycle + (distanceTime.distance/1000 * perKM.motorcycle) + (distanceTime.time * perMinute.motorcycle) 
+        rikshaw : baseFare.rikshaw + ( ( distanceTime.distance.value / 1000 ) * perKM.rikshaw ) + ( ( distanceTime.duration.value / 60 ) * perMinute.rikshaw ) ,
+        car : baseFare.car + ( ( distanceTime.distance.value / 1000 ) * perKM.car ) + ( ( distanceTime.duration.value / 60 ) * perMinute.car ) ,
+        motorcycle : baseFare.motorcycle + ( ( distanceTime.distance.value / 1000 ) * perKM.motorcycle ) + ( ( distanceTime.duration.value / 60 ) * perMinute.motorcycle ) 
     }
 
     return fares
 }
+
+/**
+ * The Function for Generating The One Time Password of desired Length.
+ * @param {Number} digits The Number of Digits in OTP (Length of OTP).
+ * @returns the Generated String of Random Number.
+ */
+const generateOTP = (digits)=>crypto.randomInt(Math.pow(10,digits-1),Math,pow(10,digits)).toString() ;
 
 export async function create ({ userID , pickup , destination , selectedRide }) {
 
@@ -42,10 +50,12 @@ export async function create ({ userID , pickup , destination , selectedRide }) 
         throw new Error( "All Fields are Required" )
     }
 
+    
+
     const fares = await calculateFare( pickup , destination ) ;
 
     const ride = Ride.create({
-        user : userID , pickup , destination , fare : fares[selectedRide]
+        user : userID , pickup , destination , fare : fares[selectedRide] , otp : generateOTP(4)
     })
 
     return ride ;

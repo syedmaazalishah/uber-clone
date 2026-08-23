@@ -8,8 +8,10 @@ import * as Controllers from '../controllers/ride.controllers.js'
  */
 const RideRouter = Router()
     .post( "/create" , AuthUser , Ride_Create , Controllers.CreateRide )
+//  method , endpoint , auth user , validation , controller function.
 
 
 
 
+;
 export default RideRouter;

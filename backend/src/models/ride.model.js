@@ -1,7 +1,7 @@
 import { Schema , model } from 'mongoose' ;
 
 
-const RideSchema = new Scheme({
+const RideSchema = new Schema({
 
     user : {
         type : Schema.Types.ObjectId ,
@@ -53,6 +53,12 @@ const RideSchema = new Scheme({
 
     signature : {
         type : String 
+    } ,
+
+    otp : {
+        type : String ,
+        select : false ,
+        required : true 
     }
 
 })
