@@ -1,16 +1,15 @@
 import React from 'react'
 
-import { useAppContext } from '../contexts/AppContext' ;
-import { useNavigate } from 'react-router-dom' ;
+import { useUserContext } from '../contexts/UserContext.jsx' ;
 import { useGSAP } from '@gsap/react' ;
 import { gsap } from 'gsap' ;
 
 import moment from 'moment'
 
 import { ChevronDown , User , Clock, MapPin, ArrowRight   } from 'lucide-react' ;
-import { MdSpeed , MdMoney, MdOutlineMoney } from 'react-icons/md'
+import { MdSpeed , MdOutlineMoney } from 'react-icons/md'
 
-import assets , { ridePanelData } from '../assets/assets' ;
+import assets from '../assets/assets' ;
 
 import BigButton from '../components/BigButton';
 
@@ -53,13 +52,12 @@ function HomePage() {
 	const [ waitingForDriverPanelOpened , setWaitingForDriverPanelOpened ] = React.useState( false ) ;
 	const [ rideFoundPanelOpened , setRideFoundPanelOpened ] = React.useState( false )
 
-	const { token } = useAppContext() ;
-	const navigate = useNavigate()
-
 	const destinationRef = React.useRef( document.getElementById("location-destination") )
 	const ridesPanelRef = React.useRef( null ) ;
 	const selectedRideRef = React.useRef( null ) ;
 	const locationsPanelRef = React.useRef( null ) ; 
+
+	const { user , captain } = useUserContext() ;
 
 	async function handleLocationFormSubmit (e) {
 
@@ -110,13 +108,6 @@ function HomePage() {
 			}
 		})()
 	}
-
-	React.useLayoutEffect( function() {
-		if ( !token ) {
-			navigate("/login")
-		}
-	} , [] )
-
 	
 	function User_HomePage ( ) {
 
@@ -374,7 +365,13 @@ function HomePage() {
 								<User size={36} />
 							</div>
 							<div className="">
-								<h4 className='capitalize text-lg font-bold' > [Driver Name] </h4>
+								<h4 className='capitalize text-lg font-bold' >
+									{
+										captain?.fullname?.firstname
+											? (captain.fullname.firstname) + ( captain?.fullname?.lastname && ` ${captain?.fullname.lastname}` )
+											: "[ Driver Name ]"
+									}
+								</h4>
 								<h5 className='capitalize text-medium text-gray-500' > Basic Level Driver </h5>
 							</div>
 						</div>
@@ -394,13 +391,13 @@ function HomePage() {
 						</div>
 						<div className="h-fit w-fit flex flex-col gap-1 justify-center items-center rounded-xl py-2 px-1">
 							<MdSpeed size={36} className='' />
-							<h5 className="font-semibold text-2xl">{moment.duration(Date.now()).hours()}</h5>
-							<p className="text-sm">Hours Online</p>
+							<h5 className="font-semibold text-2xl">{moment.duration(Date.now()).hours()+4}</h5>
+							<p className="text-sm">Distance Traveled</p>
 						</div>
 						<div className="h-fit w-fit flex flex-col gap-1 justify-center items-center rounded-xl py-2 px-1">
 							<MdOutlineMoney size={36} className='' />
-							<h5 className="font-semibold text-2xl">{moment.duration(Date.now()).hours()}</h5>
-							<p className="text-sm">Hours Online</p>
+							<h5 className="font-semibold text-2xl">{moment.duration(Date.now()).hours()-7}</h5>
+							<p className="text-sm">Unknown</p>
 						</div>
 
 					</div>

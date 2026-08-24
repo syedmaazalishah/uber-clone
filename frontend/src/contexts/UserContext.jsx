@@ -8,7 +8,8 @@ const UserContext = createContext() ;
 
 function UserProvider({ children }) {
 
-	const [ user , setUser ] = useState({}) ;
+	const [ user , setUser ] = useState( {} ) ;
+	const [ captain , setCaptain ] = useState( {} ) ;
 
 	const navigate = useNavigate() ;
 
@@ -16,12 +17,16 @@ function UserProvider({ children }) {
 		const { token } = localStorage ;
 		if ( !token ) {
 			toast.error('Please Login before Use.')
-			navigate("/")
+			navigate("/login")
 		}
 		try {
-			const { data } = await axios.get( `/api/${ localStorage.current === 'captain' ? 'captain' : 'user' }/profile` ) ;
+			const { data } = await axios.get( `/api/${ localStorage?.current?.toLowerCase() === 'captain' ? 'captain' : 'user' }/profile` ) ;
 			if ( data.success ) {
-				setUser( data.user )
+				if ( localStorage?.current === 'user' ) {
+					setUser( data.user )
+				} else if ( localStorage?.current === 'captain' ) {
+					setCaptain( data.captain )
+				}
 			} else {
 				toast.error( data.message )
 			}
@@ -30,7 +35,7 @@ function UserProvider({ children }) {
 		}
 	}
 	
-	const value = { user , setUser }
+	const value = { user , setUser , captain , setCaptain }
 	useEffect( function() {
 		authenticateUser()
 	} , [] )
