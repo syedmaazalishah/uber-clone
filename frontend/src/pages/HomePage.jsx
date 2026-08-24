@@ -1,37 +1,45 @@
 import React from 'react'
 
-import { useAppContext } from '../../contexts/AppContext' ;
+import { useAppContext } from '../contexts/AppContext' ;
 import { useNavigate } from 'react-router-dom' ;
 import { useGSAP } from '@gsap/react' ;
 import { gsap } from 'gsap' ;
 
 import moment from 'moment'
 
-import { ChevronDown , User , Clock   } from 'lucide-react' ;
+import { ChevronDown , User , Clock, MapPin, ArrowRight   } from 'lucide-react' ;
 import { MdSpeed , MdMoney, MdOutlineMoney } from 'react-icons/md'
 
-import assets , { ridePanelData } from '../../assets/assets' ;
+import assets , { ridePanelData } from '../assets/assets' ;
 
-import BigButton from '../../components/BigButton';
+import BigButton from '../components/BigButton';
+
+import { debounce } from '../utils/debounce.js';
+import axios from '../utils/axios.js'
 
 // ----- User ---- Imports
 
-import LocationsSearchPanel from '../../components/LocationsSearchPanel' ;
-import RideSelectionPanel from '../../components/User/RideSelectionPanel' ;
-import SelectedRidePanel from '../../components/User/WaitingForDriverConfirm' ;
-import WaitingForDriver from '../../components/User/ConfirmRide' ;
-import RideFoundPanel from '../../components/User/RideFoundPanel' ;
+import LocationsSearchPanel from '../components/LocationsSearchPanel' ;
+import RideSelectionPanel from '../components/User/RideSelectionPanel' ;
+import SelectedRidePanel from '../components/User/WaitingForDriverConfirm' ;
+import WaitingForDriver from '../components/User/ConfirmRide' ;
+import RideFoundPanel from '../components/User/RideFoundPanel' ;
 
 
 // ---- Captain ---- Imports
 
-import Popop_RideRequest from '../../components/Captain/Popop_RideRequest';
-import Panel_ConfirmRideRequest from '../../components/Captain/Panel_ConfirmRideRequest';
+import Popop_RideRequest from '../components/Captain/Popop_RideRequest';
+import Panel_ConfirmRideRequest from '../components/Captain/Panel_ConfirmRideRequest';
+import toast from 'react-hot-toast';
 
 function HomePage() {
 
 	const [ locationPickup , setLocationPickup ] = React.useState('') ;
 	const [ locationDestination , setLocationDestination ] = React.useState('') ;
+	const [ activeInput , setActiveInput ] = React.useState( null )
+
+	const [ pickupSuggstions , setPickupSuggestions ] = React.useState(['Mock' , 'location' ,'for' , 'Pickup'])
+	const [ destinationSuggstions , setDestinationSuggestions ] = React.useState(['Mock' ,  'Location ' , 'for ' , 'Destination'])
 
 	const [ selectedLocation , setSelectedLocation ] = React.useState( '' ) ;
 	const [ selectedRide , setSelectedRide ] = React.useState('car') ;
@@ -55,7 +63,51 @@ function HomePage() {
 	async function handleLocationFormSubmit (e) {
 
 		e.preventDefault() ;
+		if ( locationPickup !== '' && locationDestination !== "" ) {
+			setRidesPanelOpened(true)
+		}
 		
+	}
+
+	async function handlePickupSuggestions (e) {
+		await setLocationPickup( e.target.value )
+		debounce(async function(){
+			try {	
+				// console.log(locationPickup)
+				const { data } = await axios.get( "/api/map/get-suggestions" , {
+					params : {
+						query : e.target.value
+					}
+				}) ;
+				if ( data.success ) {
+					setPickupSuggestions( data.suggestions )
+				} else {
+					toast.error( data.message )
+				}
+			} catch (err) {
+				toast.error(err.message)
+			}
+		})()
+	}
+	function handleDestinationSuggestions (e) {
+		setLocationDestination( e.target.value )
+		debounce(async function(){
+			try {	
+				// console.log(locationDestination)
+				const { data } = await axios.get( "/api/map/get-suggestions" , {
+					params : {
+						query : e.target.value()
+					}
+				}) ;
+				if ( data.success ) {
+					setDestinationSuggestions( data.suggestions )
+				} else {
+					toast.error( data.message )
+				}
+			} catch (err) {
+				toast.error(err.message)
+			}
+		})()
 	}
 
 	React.useLayoutEffect( function() {
@@ -126,7 +178,7 @@ function HomePage() {
 
 				<div className="absolute w-full max-h-screen overflow-y-hidden bottom-0 rounded-2xl flex flex-col justify-end items-center">
 					
-					<div className="p-4 bg-white h-50 ">
+					<div className="p-4 bg-white">
 						<div className="flex justify-between items-center">
 							<h4 className="text-3xl font-semibold">Find a Trip.</h4>
 							{locationsPanelOpened && <ChevronDown size={28} onClick={()=>setLocationsPanelOpened(false)} /> }
@@ -137,13 +189,21 @@ function HomePage() {
 								<div className="absolute h-3 w-3 -left-1 -top-1 bg-gray-800 rounded-full"></div>
 								<div className="absolute h-3 w-3 -left-1 bottom-0 bg-gray-800 rounded-full"></div>
 							</div>
-							<input onClick={ () => setLocationsPanelOpened(true) } onChange={ e=>setLocationPickup(e.target.value) } name='pickup' type="text" className="px-12 rounded-xl py-2 w-full text-lg bg-[#eeeeee] border" placeholder='Add a Pickup Location.' />
-							<input onClick={ () => setLocationsPanelOpened(true) } onChange={ e=>setLocationDestination(e.target.value) } name='destination' type="text" className="px-12 rounded-xl py-2 w-full text-lg bg-[#eeeeee] border mt-4" placeholder='Enter Your Destination.' />
+							<input value={locationPickup} onClick={ () => { setLocationsPanelOpened(true) ; setActiveInput("pickup") } } onChange={ handlePickupSuggestions } name='pickup' type="text" className="px-12 rounded-xl py-2 w-full text-lg bg-[#eeeeee] border" placeholder='Add a Pickup Location.' />
+							<input value={locationDestination} onClick={ () => { setLocationsPanelOpened(true) ; setActiveInput("destination") } } onChange={ handleDestinationSuggestions } name='destination' type="text" className="px-12 rounded-xl py-2 w-full text-lg bg-[#eeeeee] border mt-4" placeholder='Enter Your Destination.' />
+							{ locationPickup && locationDestination && <BigButton text='Find Trip' Icon={ArrowRight} type='submit' onClick={handleLocationFormSubmit} className='bg-green-600' />}
 						</form>
 					</div>
 
 					<div ref={ locationsPanelRef } className={`w-full bg-white`}>
-						<LocationsSearchPanel 
+						<h2 className="font-semibold flex gap-2 pl-4"> <MapPin /> Locations Suggestions.</h2>
+						<LocationsSearchPanel
+							locationPickup={locationPickup}
+							activeInput={activeInput}
+							setLocationPickup={setLocationPickup}
+							pickupSuggstions={pickupSuggstions}
+							destinationSuggestions={destinationSuggstions}
+							setLocationDestination={setLocationDestination}
 							setSelectedLocation={setSelectedLocation}
 							selectedLocation={selectedLocation}
 							setRidesPanelOpened={setRidesPanelOpened}
@@ -157,6 +217,9 @@ function HomePage() {
 					ref={ridesPanelRef}
 					setSelectedLocation={setSelectedLocation}
 					setRidesPanelOpened={setRidesPanelOpened}
+					ridesPanelOpened={ridesPanelOpened}
+					locationPickup={locationPickup}
+					locationDestination={locationDestination}
 					selectedRide={selectedRide}
 					setSelectedRide={setSelectedRide}
 					setSelectedRidePanelOpened={setSelectedRidePanelOpened}
@@ -245,7 +308,7 @@ function HomePage() {
 					<img src={assets.maps.map_1} alt="" className="h-full w-full object-cover" />
 				</div>
 
-				<div className="h-[250px] p-4">
+				<div className="h-62.5 p-4">
 					{/* Header */}
 					<div className="flex justify-between items-center">
 						<div className="flex justify-start gap-2 items-center">

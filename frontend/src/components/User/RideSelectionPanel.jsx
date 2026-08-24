@@ -1,11 +1,39 @@
-import React from 'react'
+import React from 'react';
 
 import { ArrowLeft , Car , Motorbike , User2 } from 'lucide-react'
 
 import { ridePanelData } from '../../assets/assets.js' ;
 
-function RideSelectionPanel( {ref, setSelectedLocation , setRidesPanelOpened , setSelectedRide , setWaitingForDriverPanelOpened } ) {
+import axios from '../../utils/axios.js'
+import toast from 'react-hot-toast';
 
+function RideSelectionPanel( {ref, setSelectedLocation , locationPickup , locationDestination , ridesPanelOpened , setRidesPanelOpened , setSelectedRide , setWaitingForDriverPanelOpened } ) {
+
+    const [ fares , setFares ] = React.useState( {} )
+
+    const get_fares_info = async () => {
+        if ( ridesPanelOpened ) {
+            try {
+                const { data } = await axios.get( "/api/ride/get-fare" , {
+                    params : {
+                        origin : locationPickup ,
+                        destination : locationDestination
+                    }
+                } )
+                if ( data.success ) {
+                    setFares( data.fares )
+                } else {
+                    toast.error( data.message )
+                }
+            } catch ( err ) {
+                toast.error( err.message )
+            }
+        }
+    }
+
+    React.useLayoutEffect( function () {
+        get_fares_info()
+    } , [ ridesPanelOpened ] )
 
     return (
         <div ref={ref} className="absolute border z-120 left-0 bottom-0 right-0 w-full h-screen overflow-y-scroll bg-white p-4 rounded-2xl">
@@ -24,7 +52,7 @@ function RideSelectionPanel( {ref, setSelectedLocation , setRidesPanelOpened , s
                         <p className="text-xs font-medium text-gray-800">2 Minutes Away</p>
                         <p className="text-xs text-gray-600">Affordable Compact Rides</p>
                     </div>
-                    <h2 className="font-bold text-lg self-start mt-3 text-nowrap w-fit">Rs 1499.00</h2>
+                    <h2 className="font-bold text-lg self-start mt-3 text-nowrap w-fit">Rs {fares.car ? fares.car : "0.00"}</h2>
                 </div>
                 <div onClick={()=>{setSelectedRide('motorcycle');setWaitingForDriverPanelOpened(true)}} className="flex px-2 items-center justify-between gap-2 w-full border border-black/40 active:border-black bg-gray-1004 max-h-25 rounded-xl" >
                     <img src={ridePanelData.motorcycle} alt="" className="w-22 aspect-square object-contain" />
@@ -33,7 +61,7 @@ function RideSelectionPanel( {ref, setSelectedLocation , setRidesPanelOpened , s
                         <p className="text-xs font-medium text-gray-800">2 Minutes Away</p>
                         <p className="text-xs text-gray-600">Affordable Compact Rides</p>
                     </div>
-                    <h2 className="font-bold text-lg self-start mt-3 text-nowrap w-fit">Rs 1499.00</h2>
+                    <h2 className="font-bold text-lg self-start mt-3 text-nowrap w-fit">Rs {fares.motorcycle ? fares.motorcycle : "0.00"}</h2>
                 </div>
                 <div onClick={()=>{setSelectedRide('rikshaw');setWaitingForDriverPanelOpened(true)}} className="flex px-2 items-center justify-between gap-2 w-full border border-black/40 active:border-black bg-gray-1004 max-h-25 rounded-xl" >
                     <img src={ridePanelData.rikshaw} alt="" className="w-22 aspect-square object-contain" />
@@ -42,7 +70,7 @@ function RideSelectionPanel( {ref, setSelectedLocation , setRidesPanelOpened , s
                         <p className="text-xs font-medium text-gray-800">2 Minutes Away</p>
                         <p className="text-xs text-gray-600">Affordable Compact Rides</p>
                     </div>
-                    <h2 className="font-bold text-lg self-start mt-3 text-nowrap w-fit">Rs 1499.00</h2>
+                    <h2 className="font-bold text-lg self-start mt-3 text-nowrap w-fit">Rs {fares.rikshaw ? fares.rikshaw : "0.00"}</h2>
                 </div>
 
             </div>

@@ -2,7 +2,7 @@ import Ride from '../models/ride.model.js';
 import { get_Distance_Time } from '../services/maps.google.services'
 import crypto from 'crypto'
 
-async function calculateFare ( origin , destination ) {
+export async function calculateFare ( origin , destination ) {
 
     if ( !origin || !destination ) {
         throw new Error( "Pickup and Destination are Required for Calculating Fare." )
@@ -29,9 +29,9 @@ async function calculateFare ( origin , destination ) {
     }
     
     const fares = {
-        rikshaw : baseFare.rikshaw + ( ( distanceTime.distance.value / 1000 ) * perKM.rikshaw ) + ( ( distanceTime.duration.value / 60 ) * perMinute.rikshaw ) ,
-        car : baseFare.car + ( ( distanceTime.distance.value / 1000 ) * perKM.car ) + ( ( distanceTime.duration.value / 60 ) * perMinute.car ) ,
-        motorcycle : baseFare.motorcycle + ( ( distanceTime.distance.value / 1000 ) * perKM.motorcycle ) + ( ( distanceTime.duration.value / 60 ) * perMinute.motorcycle ) 
+        rikshaw : Math.ceil(baseFare.rikshaw + ( ( distanceTime.distance.value / 1000 ) * perKM.rikshaw ) + ( ( distanceTime.duration.value / 60 ) * perMinute.rikshaw )) ,
+        car : Math.ceil(baseFare.car + ( ( distanceTime.distance.value / 1000 ) * perKM.car ) + ( ( distanceTime.duration.value / 60 ) * perMinute.car )),
+        motorcycle : Math.ceil(baseFare.motorcycle + ( ( distanceTime.distance.value / 1000 ) * perKM.motorcycle ) + ( ( distanceTime.duration.value / 60 ) * perMinute.motorcycle ))
     }
 
     return fares

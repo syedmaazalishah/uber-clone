@@ -8,7 +8,7 @@ import { Toaster } from 'react-hot-toast';
 import StartPage from './pages/StartPage';
 import PageProtectioWrapper from './pages/PageProtectioWrapper' ;
 
-import HomePage from './pages/User/HomePage';
+import HomePage from './pages/HomePage';
 import RidingPage from './pages/RidingPage';
 
 import UserLogin from './pages/User/UserLogin';

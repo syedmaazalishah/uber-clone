@@ -262,3 +262,24 @@ export async function Ride_Create ( req , res , next ) {
     return next()
 
 }
+export async function Ride_GetFare ( req , res , next ) {
+
+    const { pickup , destination } = req.query ;
+
+    if  ( !pickup || !destination ) {
+        return res.json({success: false , message : "Pickup & Destination are Requied for Calculating Fare" })
+    }
+
+    if ( !pickup || !isLength( pickup , { min : 3} ) ) {
+        return res.json( { succes : false , message : "Invalid Pickup Point." } )
+    }
+
+    if ( !destination || !isLength( destination , { min : 3 } ) ) {
+        return res.json( { succes : false , message : "Invalid Drop Point." } )
+    }
+
+    req.validationCompleted = true ;
+
+    return next()
+
+}
