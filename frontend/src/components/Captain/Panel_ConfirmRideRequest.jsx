@@ -46,7 +46,7 @@ function Panel_ConfirmRideRequest({ id, setPanel_ConfirmRideShow }) {
 
 			<div className="flex flex-col w-full gap-3 pb-4 border-all-ine">
 
-				<div className="flex min-h-16 justify-start items-center border bg-gray-800/5 border-gray-500/50 rounded-xl pr-2">
+				<div className="flex min-h-16 justify-start items-center border bg-gray-800/5 border-gray-500/50 rounded-xl p-2 gap-3 ">
 					<div className='h-full aspect-square flex justify-center items-center' >
 						<MapPin size={36} />
 					</div>
@@ -54,7 +54,7 @@ function Panel_ConfirmRideRequest({ id, setPanel_ConfirmRideShow }) {
 						<h3 className="text-lg font-semibold"> [ From Location , Pickup Point ] </h3>
 					</div>
 				</div>
-				<div className="flex min-h-16 justify-start items-center border bg-gray-800/5 border-gray-500/50 rounded-xl pr-2" >
+				<div className="flex min-h-16 justify-start items-center border bg-gray-800/5 border-gray-500/50 rounded-xl p-2 gap-3 " >
 					<div className='h-full aspect-square flex justify-center items-center' >
 						<StopCircle size={36} />
 					</div>
@@ -62,7 +62,7 @@ function Panel_ConfirmRideRequest({ id, setPanel_ConfirmRideShow }) {
 						<h3 className="text-lg font-semibold"> [ To Location , Destination Point ] </h3>
 					</div>
 				</div>
-				<div className="flex min-h-16 justify-start items-center border bg-gray-800/5 border-gray-500/50 rounded-xl pr-2" >
+				<div className="flex min-h-16 justify-start items-center border bg-gray-800/5 border-gray-500/50 rounded-xl p-2 gap-3 " >
 					<div className='h-full aspect-square flex justify-center items-center' >
 						<CreditCard size={36} />
 					</div>

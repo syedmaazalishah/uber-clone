@@ -9,7 +9,8 @@ const LocationsSearchPanel = ({
 	setRidesPanelOpened ,
 	activeInput ,
 	pickupSuggstions ,
-	destinationSuggestions
+	destinationSuggestions ,
+	destinationRef
 }) => {
 
     const locations = activeInput === 'pickup' ? pickupSuggstions : destinationSuggestions ;
@@ -17,6 +18,8 @@ const LocationsSearchPanel = ({
 	function handleClickLocation (location) {
 		if ( activeInput === 'pickup' ) {
 			setLocationPickup( location.trim() )
+			destinationRef.current.focus()
+			// document.getElementById("location-pickup").focus({focusVisible:true})
 		} else {
 			setLocationDestination( location.trim() )
 		}

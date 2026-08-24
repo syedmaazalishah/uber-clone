@@ -38,14 +38,14 @@ function HomePage() {
 	const [ locationDestination , setLocationDestination ] = React.useState('') ;
 	const [ activeInput , setActiveInput ] = React.useState( null )
 
-	const [ pickupSuggstions , setPickupSuggestions ] = React.useState(['Mock' , 'location' ,'for' , 'Pickup'])
-	const [ destinationSuggstions , setDestinationSuggestions ] = React.useState(['Mock' ,  'Location ' , 'for ' , 'Destination'])
+	const [ pickupSuggstions , setPickupSuggestions ] = React.useState(['Mock Pickup Location 1' , 'Mock Pickup Location 2'])
+	const [ destinationSuggstions , setDestinationSuggestions ] = React.useState(['Mock Destination Location 1' , 'Mock Destination Location 2' ])
 
 	const [ selectedLocation , setSelectedLocation ] = React.useState( '' ) ;
 	const [ selectedRide , setSelectedRide ] = React.useState('car') ;
 	const [ selectedDriver , setSelectedDriver ] = React.useState('') ;
 
-	const [ driverConfirmed , setDriverConfirmed ] = React.useState( true )
+	const [ driverConfirmed , setDriverConfirmed ] = React.useState( false )
 
 	const [ locationsPanelOpened , setLocationsPanelOpened ] = React.useState( false ) ;
 	const [ ridesPanelOpened , setRidesPanelOpened ] = React.useState( false ) ;
@@ -56,6 +56,7 @@ function HomePage() {
 	const { token } = useAppContext() ;
 	const navigate = useNavigate()
 
+	const destinationRef = React.useRef( document.getElementById("location-destination") )
 	const ridesPanelRef = React.useRef( null ) ;
 	const selectedRideRef = React.useRef( null ) ;
 	const locationsPanelRef = React.useRef( null ) ; 
@@ -96,7 +97,7 @@ function HomePage() {
 				// console.log(locationDestination)
 				const { data } = await axios.get( "/api/map/get-suggestions" , {
 					params : {
-						query : e.target.value()
+						query : e.target.value
 					}
 				}) ;
 				if ( data.success ) {
@@ -118,6 +119,8 @@ function HomePage() {
 
 	
 	function User_HomePage ( ) {
+
+		const [ fares , setFares ] = React.useState( {car:0,motorcycle:0,rikshaw:0} )
 
 		useGSAP( function() {
 			if ( locationsPanelOpened ) {
@@ -160,12 +163,54 @@ function HomePage() {
 				gsap.to( document.getElementById("panel-4") , {
 					bottom : '0px'
 				} )
+				if ( !driverConfirmed ) {
+					setTimeout( ()=>{
+						setDriverConfirmed( true )
+					} , 5000 )
+				}
 			} else {
 				gsap.to( document.getElementById("panel-4") , {
 					bottom : '-100%'
 				} )
 			}
 		} , [ selectedRidePanelOpened , rideFoundPanelOpened ] )
+
+		async function get_fares_info () {
+			try {
+				const { data } = await axios.get( "/api/ride/get-fare" , {
+					params : {
+						origin : locationPickup ,
+						destination : locationDestination
+					}
+				} )
+				if ( data.success ) {
+					setFares( data.fares )
+				} else {
+					toast.error( data.message )
+				}
+			} catch ( err ) {
+				toast.error( err.message )
+			}
+		}
+
+	    async function createRide ( vehicleType ) {
+
+			try {
+				const { data } = await axios.post( "/api/ride/create" , {
+					pickup : locationPickup ,
+					destination : locationDestination ,
+					selectedRide : vehicleType
+				} )
+				if ( data.success ) {
+					// console.log( data )
+				} else {
+					toast.error( data.message )
+				}
+			} catch ( err ) {
+				toast.error( err.message )
+			}
+
+		}
 
 		return (
 			<section className="relative">
@@ -189,8 +234,8 @@ function HomePage() {
 								<div className="absolute h-3 w-3 -left-1 -top-1 bg-gray-800 rounded-full"></div>
 								<div className="absolute h-3 w-3 -left-1 bottom-0 bg-gray-800 rounded-full"></div>
 							</div>
-							<input value={locationPickup} onClick={ () => { setLocationsPanelOpened(true) ; setActiveInput("pickup") } } onChange={ handlePickupSuggestions } name='pickup' type="text" className="px-12 rounded-xl py-2 w-full text-lg bg-[#eeeeee] border" placeholder='Add a Pickup Location.' />
-							<input value={locationDestination} onClick={ () => { setLocationsPanelOpened(true) ; setActiveInput("destination") } } onChange={ handleDestinationSuggestions } name='destination' type="text" className="px-12 rounded-xl py-2 w-full text-lg bg-[#eeeeee] border mt-4" placeholder='Enter Your Destination.' />
+							<input id="location-pickup" value={locationPickup} onClick={ () => { setLocationsPanelOpened(true) ; setActiveInput("pickup") } } onFocus={()=>setActiveInput("pickup")} onChange={ handlePickupSuggestions } name='pickup' type="text" className="px-12 rounded-xl py-2 w-full text-lg bg-[#eeeeee] border" placeholder='Add a Pickup Location.' />
+							<input id="location-destination" ref={destinationRef} value={locationDestination} onClick={ () => { setLocationsPanelOpened(true) ; setActiveInput("destination") } } onFocus={()=>setActiveInput("destination")} onChange={ handleDestinationSuggestions } name='destination' type="text" className="px-12 rounded-xl py-2 w-full text-lg bg-[#eeeeee] border mt-4" placeholder='Enter Your Destination.' />
 							{ locationPickup && locationDestination && <BigButton text='Find Trip' Icon={ArrowRight} type='submit' onClick={handleLocationFormSubmit} className='bg-green-600' />}
 						</form>
 					</div>
@@ -207,6 +252,7 @@ function HomePage() {
 							setSelectedLocation={setSelectedLocation}
 							selectedLocation={selectedLocation}
 							setRidesPanelOpened={setRidesPanelOpened}
+							destinationRef={destinationRef}
 						/>
 					</div>
 
@@ -215,6 +261,8 @@ function HomePage() {
 				<div id='panel-2' className=" w-screen fixed -bottom-full left-0">
 				<RideSelectionPanel
 					ref={ridesPanelRef}
+					fares={fares}
+					get_fares_info={get_fares_info}
 					setSelectedLocation={setSelectedLocation}
 					setRidesPanelOpened={setRidesPanelOpened}
 					ridesPanelOpened={ridesPanelOpened}
@@ -230,11 +278,15 @@ function HomePage() {
 				<div id='panel-3' className=" w-screen fixed -bottom-full left-0">
 					<WaitingForDriver
 						selectedDriver={selectedDriver}
+						locationPickup={locationPickup}
+						locationDestination={locationDestination}
 						setSelectedDriver={setSelectedDriver}
 						setWaitingForDriverPanelOpened={setWaitingForDriverPanelOpened}
 						waitingForDriverPanelOpened={waitingForDriverPanelOpened}
 						setSelectedRidePanelOpened={setSelectedRidePanelOpened}
 						selectedRide={selectedRide}
+						createRide={createRide}
+						fares={fares}
 					/>
 				</div>
 
@@ -246,12 +298,18 @@ function HomePage() {
 								selectedRide={selectedRide}
 								setDriverConfirmed={setDriverConfirmed}
 								setRideFoundPanelOpened={setRideFoundPanelOpened}
+								fares={fares}
+								locationDestination={locationDestination}
+								locationPickup={locationPickup}
 							/>
 						)
 						: (
 							<SelectedRidePanel
 								ref={selectedRideRef}
 								selectedRide={selectedRide}
+								locationPickup={locationPickup}
+								locationDestination={locationDestination}
+								fares={fares}
 								setSelectedRide={setSelectedRide}
 								selectedRidePanelOpened={selectedRidePanelOpened}
 								setSelectedRidePanelOpened={setSelectedRidePanelOpened}

@@ -7,32 +7,12 @@ import { ridePanelData } from '../../assets/assets.js' ;
 import axios from '../../utils/axios.js'
 import toast from 'react-hot-toast';
 
-function RideSelectionPanel( {ref, setSelectedLocation , locationPickup , locationDestination , ridesPanelOpened , setRidesPanelOpened , setSelectedRide , setWaitingForDriverPanelOpened } ) {
-
-    const [ fares , setFares ] = React.useState( {} )
-
-    const get_fares_info = async () => {
-        if ( ridesPanelOpened ) {
-            try {
-                const { data } = await axios.get( "/api/ride/get-fare" , {
-                    params : {
-                        origin : locationPickup ,
-                        destination : locationDestination
-                    }
-                } )
-                if ( data.success ) {
-                    setFares( data.fares )
-                } else {
-                    toast.error( data.message )
-                }
-            } catch ( err ) {
-                toast.error( err.message )
-            }
-        }
-    }
+function RideSelectionPanel( {ref, setSelectedLocation , get_fares_info , fares , locationPickup , locationDestination , ridesPanelOpened , setRidesPanelOpened , setSelectedRide , setWaitingForDriverPanelOpened } ) {
 
     React.useLayoutEffect( function () {
-        get_fares_info()
+        if ( ridesPanelOpened ) {
+            get_fares_info()
+        }
     } , [ ridesPanelOpened ] )
 
     return (
@@ -45,7 +25,7 @@ function RideSelectionPanel( {ref, setSelectedLocation , locationPickup , locati
 
             <div className="flex flex-col gap-2 py-6 justify-start items-center">
 
-                <div onClick={()=>{setSelectedRide('car');setWaitingForDriverPanelOpened(true)}} className="flex px-2 items-center justify-between gap-2 w-full border border-black/40 active:border-black bg-gray-1004 max-h-25 rounded-xl" >
+                <div onClick={()=>{setSelectedRide('car');setWaitingForDriverPanelOpened(true) }} className="flex px-2 items-center justify-between gap-2 w-full border border-black/40 active:border-black bg-gray-1004 max-h-25 rounded-xl" >
                     <img src={ridePanelData.car} alt="" className="w-22 aspect-square object-contain" />
                     <div className="w-full py-2">
                         <h4 className="flex items-center gap-2 text-base font-bold">UberGo <span className="flex items-center gap-1"><User2 size={18} fill="#000000" /> 4</span></h4>
@@ -54,7 +34,7 @@ function RideSelectionPanel( {ref, setSelectedLocation , locationPickup , locati
                     </div>
                     <h2 className="font-bold text-lg self-start mt-3 text-nowrap w-fit">Rs {fares.car ? fares.car : "0.00"}</h2>
                 </div>
-                <div onClick={()=>{setSelectedRide('motorcycle');setWaitingForDriverPanelOpened(true)}} className="flex px-2 items-center justify-between gap-2 w-full border border-black/40 active:border-black bg-gray-1004 max-h-25 rounded-xl" >
+                <div onClick={()=>{setSelectedRide('motorcycle');setWaitingForDriverPanelOpened(true) }} className="flex px-2 items-center justify-between gap-2 w-full border border-black/40 active:border-black bg-gray-1004 max-h-25 rounded-xl" >
                     <img src={ridePanelData.motorcycle} alt="" className="w-22 aspect-square object-contain" />
                     <div className="w-full py-2">
                         <h4 className="flex items-center gap-2 text-base font-bold">UberGo <span className="flex items-center gap-1"><User2 size={18} fill="#000000" /> 4</span></h4>
@@ -63,7 +43,7 @@ function RideSelectionPanel( {ref, setSelectedLocation , locationPickup , locati
                     </div>
                     <h2 className="font-bold text-lg self-start mt-3 text-nowrap w-fit">Rs {fares.motorcycle ? fares.motorcycle : "0.00"}</h2>
                 </div>
-                <div onClick={()=>{setSelectedRide('rikshaw');setWaitingForDriverPanelOpened(true)}} className="flex px-2 items-center justify-between gap-2 w-full border border-black/40 active:border-black bg-gray-1004 max-h-25 rounded-xl" >
+                <div onClick={()=>{setSelectedRide('rikshaw');setWaitingForDriverPanelOpened(true) }} className="flex px-2 items-center justify-between gap-2 w-full border border-black/40 active:border-black bg-gray-1004 max-h-25 rounded-xl" >
                     <img src={ridePanelData.rikshaw} alt="" className="w-22 aspect-square object-contain" />
                     <div className="w-full py-2">
                         <h4 className="flex items-center gap-2 text-base font-bold">UberGo <span className="flex items-center gap-1"><User2 size={18} fill="#000000" /> 4</span></h4>

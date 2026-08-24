@@ -6,8 +6,15 @@ import { ridePanelData } from '../../assets/assets.js' ;
 
 import BigButton from '../BigButton.jsx' ;
 
-function WaitingForDriver({ setWaitingForDriverPanelOpened , ref , selectedRide , setSelectedRidePanelOpened }) {
+function WaitingForDriver({ setWaitingForDriverPanelOpened , ref , selectedRide , setSelectedRidePanelOpened , locationPickup , locationDestination , fares , createRide }) {
 
+    async function handleClickConfirmRide () {
+
+        setSelectedRidePanelOpened(true)
+
+        await createRide( selectedRide ) ;
+
+    }
 
     return (
         <div ref={ref} className="absolute border z-120 left-0 right-0 max-w-screen h-screen bottom-0 overflow-y-scroll bg-white p-4 rounded-2xl flex flex-col justify-between" >
@@ -24,39 +31,52 @@ function WaitingForDriver({ setWaitingForDriverPanelOpened , ref , selectedRide 
                             <img src={ridePanelData[selectedRide]} alt="No Ride Selected Yet." className="z-105 w-50 aspect-square object-contain absolute" />
                         </div>
                     </div>
-                    <div className="w-full mb-5 min-h-20 flex my-4 flex-col gap-2">
-
-                        <div className="flex gap-2 justify-start items-center">
-                            <div className='h-full mx-2 aspect-square' >
-                                <MapPin size={36}  />
+                    
+                    <div className="flex flex-col w-full gap-3 pb-4 border-all-ine">
+        
+                        <div className="flex min-h-16 justify-start items-center border bg-gray-800/5 border-gray-500/50 rounded-xl p-2 gap-3 ">
+                            <div className='h-full aspect-square flex justify-center items-center' >
+                                <MapPin size={36} />
                             </div>
                             <div className="w-full">
-                                <h3 className="text-xl font-bold">Near Azmat's Shop</h3>
-                                <h3 className="text-lg">Umarabad Shaidu , Nowshehra</h3>
+                                <h3 className="text-lg font-semibold">
+                                    {
+                                        locationPickup
+                                            ? ( locationPickup )
+                                            : ( " Pickup Location ." )
+                                    }
+                                </h3>
                             </div>
                         </div>
-                        <div className="flex gap-2 justify-start items-center">
-                            <div className='h-full mx-2 aspect-square' >
-                                <StopCircle size={36}  />
+                        <div className="flex min-h-16 justify-start items-center border bg-gray-800/5 border-gray-500/50 rounded-xl p-2 gap-3 " >
+                            <div className='h-full aspect-square flex justify-center items-center' >
+                                <StopCircle size={36} />
                             </div>
                             <div className="w-full">
-                                <h3 className="text-xl font-bold">Jehangira</h3>
-                                <h3 className="text-lg">Nowshehra</h3>
+                                <h3 className="text-lg font-semibold">
+{
+                                        locationDestination
+                                            ? ( locationDestination )
+                                            : ( " Destination Location ." )
+                                    }
+                                </h3>
                             </div>
                         </div>
-                        <div className="flex gap-2 justify-start items-center">
-                            <div className='h-full mx-2 aspect-square' >
-                                <CreditCard size={36}  />
+                        <div className="flex min-h-16 justify-start items-center border bg-gray-800/5 border-gray-500/50 rounded-xl p-2 gap-3 " >
+                            <div className='h-full aspect-square flex justify-center items-center' >
+                                <CreditCard size={36} />
                             </div>
                             <div className="w-full">
-                                <h3 className="text-xl font-bold">Rs 1499.00</h3>
+                                <h3 className="text-xl font-bold">Rs {fares[selectedRide]}</h3>
                                 <h3 className="text-lg">Cash Cash</h3>
                             </div>
                         </div>
-
+        
                     </div>
+
+
                 </div>
-                <BigButton onClick={()=>setSelectedRidePanelOpened(true)} className='bg-green-700' text="Confirm Your Ride" Icon={CheckIcon} label='Confirm Ride Button' />
+                <BigButton onClick={handleClickConfirmRide} className='bg-green-700' text="Confirm Your Ride" Icon={CheckIcon} label='Confirm Ride Button' />
             </div>
         </div>
     )
