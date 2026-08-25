@@ -18,7 +18,7 @@ const app = express() ;
 
 
 '--- Global Middelwares ---'
-dns.setServers(['8.8.8.8', '8.8.4.4']);
+dns.setServers(['8.8.8.8']);
 app.use( cors()                                  ) ;
 app.use( express.json()                          ) ;
 app.use( express.urlencoded({ extended : true }) ) ;

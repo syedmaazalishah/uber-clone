@@ -83,7 +83,7 @@ function HomePage() {
 				if ( data.success ) {
 					setPickupSuggestions( data.suggestions )
 				} else {
-					toast.error( data.message )
+					// toast.error( data.message )
 				}
 			} catch (err) {
 				toast.error(err.message)
@@ -103,7 +103,7 @@ function HomePage() {
 				if ( data.success ) {
 					setDestinationSuggestions( data.suggestions )
 				} else {
-					toast.error( data.message )
+					// toast.error( data.message )
 				}
 			} catch (err) {
 				toast.error(err.message)
