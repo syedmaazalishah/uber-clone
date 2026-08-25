@@ -43,7 +43,7 @@ app.get( "/" , ( req , res ) => {
         health : 'Better'
     } )
 } ) ;
-app.get( "/api/constants" , async function () {
+app.get( "/api/constants" , async function (req,res) {
     const data = {
         success : true ,
         vehicle : { colors , types }
