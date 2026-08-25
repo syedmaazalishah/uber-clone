@@ -1,6 +1,7 @@
 import express       from 'express' ;
 import cors          from 'cors' ;
 import cookieParser  from 'cookie-parser' ;
+import dns           from 'dns';
 
 import { colors , types } from './constants/vehicle.constants.js' ;
 
@@ -17,6 +18,7 @@ const app = express() ;
 
 
 '--- Global Middelwares ---'
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 app.use( cors()                                  ) ;
 app.use( express.json()                          ) ;
 app.use( express.urlencoded({ extended : true }) ) ;

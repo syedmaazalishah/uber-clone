@@ -4,7 +4,7 @@ import { sendMessageToSocketID } from "../utils/socket.io.utils.js";
 
 import User from '../models/user.model.js' ;
 import Captain from '../models/captain.model.js' ;
-import Ride from '../models/ride.model.js' ;
+// import Ride from '../models/ride.model.js' ;
 import rideModel from "../models/ride.model.js";
 
 export async function CreateRide ( req , res ) {

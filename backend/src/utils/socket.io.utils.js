@@ -1,5 +1,5 @@
 
-import socketIO from 'socket.io' ;
+import { Server } from 'socket.io' ;
 
 import User from '../models/user.model.js' ;
 import Captain from '../models/captain.model.js' ;
@@ -10,7 +10,7 @@ let IO ;
 
 export async function initializeSocket ( server ) {
 
-    IO = socketIO( server , {
+    IO = new Server( server , {
         cors : {
             origin : "*" ,
             methods: ["GET","POST"]
