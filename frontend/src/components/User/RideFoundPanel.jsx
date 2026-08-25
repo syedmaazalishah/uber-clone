@@ -6,7 +6,7 @@ import { ridePanelData } from '../../assets/assets.js';
 
 import BigButton from '../BigButton.jsx';
 
-function WaitingForDriver({ ref, selectedRide, setDriverConfirmed, setRideFoundPanelOpened, fares, locationDestination, locationPickup }) {
+function WaitingForDriver({ ref, ride , selectedRide, setDriverConfirmed, setRideFoundPanelOpened, fares, locationDestination, locationPickup }) {
 
     // useLayoutEffect( function(){console.log(" ----> UseLayoutEffect ( RideFoundPanel ) : VehicleType -> " + selectedRide )} , [] )
 
@@ -22,13 +22,22 @@ function WaitingForDriver({ ref, selectedRide, setDriverConfirmed, setRideFoundP
             <div className="flex flex-col justify-between h-full">
                 <div className="">
                     <div className="">
-                        <div className="relative my-5 w-full flex items-center justify-between text-right">
+                        <div className="relative my-5 mb-10 w-full flex items-center justify-between text-right">
                             <img src={ridePanelData[selectedRide]} alt="No Ride Selected Yet." className="z-105 h-25 aspect-square object-contain" />
 
                             <div className="w-full">
-                                <h3 className="uppercase text-medium">[Driver Name]</h3>
-                                <h3 className="text-xl text-nowrap font-bold uppercase">[Car Plate No]</h3>
-                                <h3 className="text-nowrap text-sm">[Vehicle Type] : Carry [Capacity]</h3>
+                                <h3 className="capitalize text-medium">
+                                    {
+                                        (ride?.captain) ? (ride?.captain?.fullname?.firstname + " " + ride?.captain?.fullname?.lastname) : "[Driver Name]" 
+                                    }
+                                </h3>
+                                <h3 className="text-xl text-nowrap font-bold uppercase">
+                                    {
+                                        (ride?.captain) ? ( ride?.captain?.vehicle?.plate ) : "[Car Plate No]"
+                                    }
+                                </h3>
+                                <h3 className="text-nowrap text-sm">{ride?.captain ? ride?.captain?.vehicle?.vehicletype: "[Type]"} : Carry {ride?.captain ? ride?.captain?.vehicle?.capacity : "[Capacity]"} </h3>
+                                <h3 className="text-medium font-bold" >OTP : {!ride ? 23432 : ride?.otp }</h3>
                             </div>
 
                         </div>
@@ -79,7 +88,7 @@ function WaitingForDriver({ ref, selectedRide, setDriverConfirmed, setRideFoundP
                     onClick={() => setDriverConfirmed(false)}
                     className='bg-green-700'
                     text="Make a Payment"
-                    Icon={CheckIcon}
+                    Icon={ CheckIcon}
                     label='Payment Button'
                 />
             </div>

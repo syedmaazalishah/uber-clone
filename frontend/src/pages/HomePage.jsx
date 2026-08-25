@@ -114,6 +114,7 @@ function HomePage() {
 	function User_HomePage ( ) {
 
 		const [ fares , setFares ] = React.useState( {car:0,motorcycle:0,rikshaw:0} )
+		const [ ride , setRide ] = React.useState( {} ) ;
 
 		useGSAP( function() {
 			if ( locationsPanelOpened ) {
@@ -210,6 +211,18 @@ function HomePage() {
 			// console.log( "useeffect of user home : " )
 		} , [ user ] )
 
+		socket.on( "ride-confirmed" , function ( ride ) {
+			// ----->
+			setRide(ride)
+			setDriverConfirmed( true )
+			setSelectedRidePanelOpened( false )
+			setRideFoundPanelOpened( true )
+		} )
+
+		socket.on( "ride-started" , function ( data ) {
+
+		} )
+
 		return (
 			<section className="relative">
 				
@@ -297,6 +310,7 @@ function HomePage() {
 								setDriverConfirmed={setDriverConfirmed}
 								setRideFoundPanelOpened={setRideFoundPanelOpened}
 								fares={fares}
+								ride={ride}
 								locationDestination={locationDestination}
 								locationPickup={locationPickup}
 							/>
@@ -331,6 +345,8 @@ function HomePage() {
 
 	function Captain_HomePage ( ) { 
 
+		const [ ride , setRide ] = React.useState({})
+
 		useGSAP( function () {
 			if ( popup_ride_req_show ) {
 				gsap.to( document.getElementById( "request-popup" ) , {
@@ -356,9 +372,36 @@ function HomePage() {
 		} , [ panel_confirmRide_show ] )
 
 		React.useEffect( function () {
+
 			socket.emit( "join" , { userType : "captain" , userID : captain?._id } )
+
+			function updateLocation () {
+				if ( navigator.geolocation ) {
+					navigator.geolocation.getCurrentPosition( pos => {
+						socket.emit( "update-location" , {
+							userID : captain._id ,
+							userType : "captain" ,
+							location : {
+								ltd : pos.coords.latitude ,
+								lng : pos.coords.longitude
+							}
+						} )
+					} )
+				}
+			}
 			// console.log( "useeffect of captain home : " )
 		} , [ captain ] )
+
+		socket.on( "new-ride" , function ( data ) {
+			setRide( data )
+			setPopupRideReqShow(true)
+		} )
+
+		async function confirmRide () {
+			await axios.post( "/api/ride/confirm" , {
+				rideID : ride?._id ,
+			} )
+		}
 
 		return (
 			<section className="relative h-screen">
@@ -419,6 +462,7 @@ function HomePage() {
 				<div className={` ${popup_ride_req_show ? "fixed h-screen w-screen bg-gray-500/50 top-0 left-0" : ""}`}>
 					<Popop_RideRequest
 						id="request-popup"
+						ride={ride}
 						setPopupRideReqShow={setPopupRideReqShow}
 						setPanel_ConfirmRideShow={setPanel_ConfirmRideShow}
 					/>
@@ -428,6 +472,8 @@ function HomePage() {
 				<div className={`relative ${panel_confirmRide_show ? "fixed h-screen w-screen bg-gray-500/50 top-0 left-0" : ""}`}>
 					<Panel_ConfirmRideRequest
 						id="panel-confirmRide"
+						ride={ride}
+						confirmRide={confirmRide}
 						setPanel_ConfirmRideShow={setPanel_ConfirmRideShow}
 					/>
 				</div>

@@ -3,7 +3,7 @@ import React from 'react'
 import { Check, X , MapPin , CreditCard , StopCircle , User } from 'lucide-react'
 import BigButton from '../BigButton'
 
-function Popop_RideRequest({ id, setPopupRideReqShow , setPanel_ConfirmRideShow }) {
+function Popop_RideRequest({ id, ride , setPopupRideReqShow , setPanel_ConfirmRideShow }) {
 	return (
 		<div id={id} className='fixed -top-full left-3 right-3 h-fit border rounded-2xl z-99999 bg-gray-100 p-4 flex flex-col gap-4'>
 
@@ -17,10 +17,14 @@ function Popop_RideRequest({ id, setPopupRideReqShow , setPanel_ConfirmRideShow 
 						<User size={36} />
 					</div>
 					<div className="">
-						<h4 className='capitalize text-lg font-bold' > [Fare Name] </h4>
+						<h4 className='capitalize text-lg font-bold' >
+							{
+								ride?.user?.fullname?.firstname + " " + ride?.user?.fullname?.lastname
+							}
+						</h4>
 					</div>
 				</div>
-				<h4 className="text-center font-bold text-lg">[D] KM</h4>	
+				{/* <h4 className="text-center font-bold text-lg">[D] KM</h4>	 */}
 			</div>
 
 			<div className="">

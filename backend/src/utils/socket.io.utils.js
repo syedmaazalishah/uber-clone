@@ -51,10 +51,10 @@ export async function initializeSocket ( server ) {
 
 }
 
-export function sendMessageToSocketID ( socketID , message ) {
+export function sendMessageToSocketID ( socketID , messageObj ) {
 
     if ( IO ) {
-        IO.to( socketID ).emit('message' , message)
+        IO.to( socketID ).emit( messageObj?.event , messageObj?.data)
     } else {
         console.log( " -> Utils ( Socket.io) Err : Sockets are not initialized yet. " )
     }

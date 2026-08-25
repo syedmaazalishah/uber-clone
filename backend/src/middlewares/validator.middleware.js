@@ -262,6 +262,7 @@ export async function Ride_Create ( req , res , next ) {
     return next()
 
 }
+
 export async function Ride_GetFare ( req , res , next ) {
 
     const { pickup , destination } = req.query ;
@@ -282,4 +283,33 @@ export async function Ride_GetFare ( req , res , next ) {
 
     return next()
 
+}
+
+export async function Ride_Confirm ( req , res , next ) {
+
+    const { rideID } = req.body ;
+
+    if ( !rideID ) {
+        return res.json({success : false , message : "Ride ID is Required for accepting The Ride Request."})
+    }
+
+    req.validationCompleted = true
+
+    return next()
+
+}
+
+export async function Ride_Start ( req , res , next ) {
+    const { rideID , otp } = req.body ;
+
+    if ( !otp ) {
+        return res.json({success : false , message : "OTP is Required for Starting the Ride."})
+    }
+    if ( !rideID ) {
+        return res.json({success : false , message : "Ride ID is Required for Starting the Ride."})
+    }
+
+    req.validationCompleted = true
+
+    return next()
 }

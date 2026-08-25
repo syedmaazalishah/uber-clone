@@ -1,6 +1,7 @@
 import Ride from '../models/ride.model.js';
 import { get_Distance_Time } from '../services/maps.google.services'
 import crypto from 'crypto'
+import { sendMessageToSocketID } from './socket.io.utils.js';
 
 export async function calculateFare ( origin , destination ) {
 
@@ -62,10 +63,63 @@ export async function create ({ userID , pickup , destination , selectedRide }) 
 
 }
 
+export async function confirmRide ( rideID , captainID ) {
+    if ( !rideID ) {
+        throw new Error("Ride ID is REQUIRED.")
+    }
 
+    await ride.findByIdAndUpdate( rideID , {
+        status : "accepted" ,
+        captain : captainID
+    } )
 
+    const ride = await Ride.findOne({
+        _id : rideID
+    }).populate("captain").populate("user") ; 
 
-const RideUtils = {
-    create : (create) , calculateFare : (calculateFare)
+    if ( !ride ) {
+        throw new Error("Ride not Found.")
+    }
+
+    return ride;
 }
-export default RideUtils
+
+export async function startRide ( { rideID , otp } ) {
+    if ( !rideID || !otp ) {
+        throw new Error("OTP & rideID is required..")
+    }
+
+    try {    
+        const ride = await Ride.findOne( { _id : rideID } ).populate("user").populate("captain").select("+otp") ;
+
+        if ( !ride ) {
+            throw new Error( "Ride not Found." ) ;
+        }
+
+        if ( ride.status === 'accepted' ) {
+            throw new Error( "Ride is not Accepted Yeh." )
+        }
+
+        if ( ride.otp !== otp ) {
+            throw new Error( "Invalid OTP." )
+        }
+
+        const updatedRide = await Ride.findByIdAndUpdate( rideId , { status : "ongoing" } , { new : true } ) 
+
+        sendMessageToSocketID( ride.user.socketid , {
+            event : "ride-started" ,
+            data : updatedRide
+        } )
+
+        return updatedRide ;
+
+    } catch ( err ) {
+        console.log( " -> Ride Utils ( StartRide ) Err : " + err.message )
+    }
+}
+
+
+// const RideUtils = {
+//     create : (create) , calculateFare : (calculateFare)
+// }
+// export default RideUtils

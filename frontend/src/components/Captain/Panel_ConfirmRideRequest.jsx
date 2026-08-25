@@ -6,20 +6,27 @@ import BigButton from '../BigButton'
 
 import toast from 'react-hot-toast' ;
 import { useNavigate } from 'react-router-dom'
+import axios from '../../utils/axios.js' ;
 
-function Panel_ConfirmRideRequest({ id, setPanel_ConfirmRideShow }) {
+function Panel_ConfirmRideRequest({ id, setPanel_ConfirmRideShow , ride }) {
 
 	const [ OTP , setOTP ] = React.useState( 0 ) ;
 
 	const navigate = useNavigate() ;
 
-	function handleConfirmFareRequest () {
+	async function handleConfirmFareRequest () {
 
 		event.preventDefault() 
 
-		if ( OTP > 999 && OTP < 10000 ) {
-			// More Logic
-			navigate("/riding")
+		if ( OTP > 99999 && OTP < 1000000 ) {
+			const { data } =  await axios.post( "/api/ride/confirm" , {
+				rideID : ride?._id , otp : OTP
+			} )
+
+			if ( data.success ) {
+				navigate("/riding")
+			}
+
 		} else {
 			toast.error( "OPT must be Four Digit Long Number." )
 		}
@@ -38,7 +45,11 @@ function Panel_ConfirmRideRequest({ id, setPanel_ConfirmRideShow }) {
 						<User size={36} />
 					</div>
 					<div className="">
-						<h4 className='capitalize text-lg font-bold' > [Fare Name] </h4>
+						<h4 className='capitalize text-lg font-bold' >
+							{
+								ride?.user?.fullname?.firstname + " " + ride?.user?.fullname?.lastname 
+							}
+						</h4>
 					</div>
 				</div>
 				<h4 className="text-center font-bold text-lg">[D] KM</h4>	
@@ -51,7 +62,11 @@ function Panel_ConfirmRideRequest({ id, setPanel_ConfirmRideShow }) {
 						<MapPin size={36} />
 					</div>
 					<div className="w-full">
-						<h3 className="text-lg font-semibold"> [ From Location , Pickup Point ] </h3>
+						<h3 className="text-lg font-semibold">
+							{
+								ride?.pickup ? (ride?.pickup) : ("[Pickup Point]")
+							}
+						</h3>
 					</div>
 				</div>
 				<div className="flex min-h-16 justify-start items-center border bg-gray-800/5 border-gray-500/50 rounded-xl p-2 gap-3 " >
@@ -59,7 +74,11 @@ function Panel_ConfirmRideRequest({ id, setPanel_ConfirmRideShow }) {
 						<StopCircle size={36} />
 					</div>
 					<div className="w-full">
-						<h3 className="text-lg font-semibold"> [ To Location , Destination Point ] </h3>
+						<h3 className="text-lg font-semibold">
+							{
+								ride?.destination ? (ride?.destination) : ("[Destination Point]")
+							}
+						</h3>
 					</div>
 				</div>
 				<div className="flex min-h-16 justify-start items-center border bg-gray-800/5 border-gray-500/50 rounded-xl p-2 gap-3 " >
@@ -67,7 +86,7 @@ function Panel_ConfirmRideRequest({ id, setPanel_ConfirmRideShow }) {
 						<CreditCard size={36} />
 					</div>
 					<div className="w-full">
-						<h3 className="text-xl font-bold">Rs [ Total Price ]</h3>
+						<h3 className="text-xl font-bold">Rs {Math.round(ride?.fare)}</h3>
 						<h3 className="text-lg">Cash Cash</h3>
 					</div>
 				</div>
