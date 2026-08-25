@@ -8,7 +8,7 @@ import BlackListedToken from '../models/blacklist.token.model.js' ;
  */
 export async function AuthUser ( req , res , next ) {
 
-    const token = req.cookies?.token || req.headers?.Authorization?.split(" ")[1] ;
+    const token = req.cookies?.token || req.headers?.authorization?.split(" ")[1] ;
 
     const isBlackListed = await BlackListedToken.findOne( { token } ) ;
 
@@ -38,7 +38,7 @@ export async function AuthUser ( req , res , next ) {
  */
 export async function AuthCaptain ( req , res , next ) {
 
-    const token = req.cookies?.token || req.headers?.Authorization?.split(" ")[1] ;
+    const token = req.cookies?.token || req.headers?.authorization?.split(" ")[1] ;
 
     const isBlackListed = await BlackListedToken.findOne( { token } ) ;
 

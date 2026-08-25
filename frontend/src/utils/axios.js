@@ -1,13 +1,26 @@
-import axios from 'axios' ;
+import axios from 'axios';
 
-const ServerURL = import.meta.env.VITE_SERVER_URL || 'http://localhost:5000' ;
+const ServerURL = import.meta.env.VITE_SERVER_URL || 'http://localhost:5000';
 
 const instance = axios.create({
-    baseURL : ServerURL ,
-    headers : {
-        "Content-Type" : 'application/json' ,
-        Authorization : `Bearer ${localStorage?.token}`
-     }
-})
+    baseURL: ServerURL,
+    headers: {
+        "Content-Type": 'application/json'
+    }
+});
 
-export default instance ;
+// Intercept every request before it is sent to add the latest token dynamically
+instance.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+export default instance;

@@ -33,6 +33,7 @@ function UserProvider({ children }) {
 		}
 		try {
 			const { data } = await axios.get( `/api/${ localStorage?.current?.toLowerCase() === 'captain' ? 'captain' : 'user' }/profile` ) ;
+			console.log(" ---------------> ",data)
 			if ( data.success ) {
 				if ( localStorage?.current === 'user' ) {
 					setUser( data.user )
