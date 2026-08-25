@@ -8,8 +8,20 @@ const UserContext = createContext() ;
 
 function UserProvider({ children }) {
 
-	const [ user , setUser ] = useState( {} ) ;
-	const [ captain , setCaptain ] = useState( {} ) ;
+	const [ user , setUser ] = useState( {
+		email : '' ,
+		fullname : {
+			firstname : '' ,
+			lastname : ''
+		}
+	} ) ;
+	const [ captain , setCaptain ] = useState( {
+		email : '' ,
+		fullname : {
+			firstname : '' ,
+			lastname : ''
+		}
+	} ) ;
 
 	const navigate = useNavigate() ;
 
