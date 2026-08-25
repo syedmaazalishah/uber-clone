@@ -18,15 +18,7 @@ function ScoketProvider({children}) {
 
     } , [ ] )
 
-    function sendMessage ( eventName , message ) {
-        socket.emit( eventName , message )
-    }
-
-    function receiveMessage ( eventName , callback ) {
-        socket.on( eventName , callback )
-    }
-
-    const value = { sendMessage , receiveMessage } ;
+    const value = { socket } ;
 
     return (
         <SocketIOContext.Provider value={value} >

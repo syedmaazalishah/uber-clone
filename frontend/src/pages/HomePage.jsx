@@ -1,12 +1,13 @@
 import React from 'react'
 
 import { useUserContext } from '../contexts/UserContext.jsx' ;
+import { useSocketContext } from '../contexts/SocketIOContext.jsx' ;
 import { useGSAP } from '@gsap/react' ;
 import { gsap } from 'gsap' ;
 
 import moment from 'moment'
 
-import { ChevronDown , User , Clock, MapPin, ArrowRight   } from 'lucide-react' ;
+import { ChevronDown , User , Clock, MapPin, ArrowRight, UserCheck   } from 'lucide-react' ;
 import { MdSpeed , MdOutlineMoney } from 'react-icons/md'
 
 import assets from '../assets/assets' ;
@@ -57,6 +58,7 @@ function HomePage() {
 	const selectedRideRef = React.useRef( null ) ;
 	const locationsPanelRef = React.useRef( null ) ; 
 
+	const { socket } = useSocketContext()
 	const { user , captain } = useUserContext() ;
 
 	async function handleLocationFormSubmit (e) {
@@ -203,6 +205,11 @@ function HomePage() {
 
 		}
 
+		React.useEffect( function () {
+			socket.emit( "join" , { userType : "user" , userID : user?._id } )
+			// console.log( "useeffect of user home : " )
+		} , [ user ] )
+
 		return (
 			<section className="relative">
 				
@@ -347,6 +354,11 @@ function HomePage() {
 				})
 			}
 		} , [ panel_confirmRide_show ] )
+
+		React.useEffect( function () {
+			socket.emit( "join" , { userType : "captain" , userID : captain?._id } )
+			// console.log( "useeffect of captain home : " )
+		} , [ captain ] )
 
 		return (
 			<section className="relative h-screen">
