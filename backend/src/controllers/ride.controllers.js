@@ -10,6 +10,8 @@ export async function CreateRide ( req , res ) {
 
     try {
         const ride = await Ride.create({...req.body , userID : req.user._id})
+
+        
         return res.json({success : true , ride})
     } catch ( err ) {
         console.log( " -> Ride Contollers ( Create ) Err : " + err.message ) ;

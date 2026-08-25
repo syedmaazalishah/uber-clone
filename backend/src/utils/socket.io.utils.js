@@ -30,6 +30,20 @@ export async function initializeSocket ( server ) {
             }
         } )
 
+        socket.on( 'update-location' , async function ( data ) {
+            const { userType , userID , location } = data ;
+
+            if ( !location || !location.ltd || !location.lng ) {
+                socket.emit( 'error' , { message : "Invalid Location." } )
+            }
+            
+            if ( userType === 'user' ) {
+                await User.findByIdAndUpdate( userID , { location } )
+            } else if ( userType === 'captain' ) {
+                await Captain.findByIdAndUpdate( userID , { location } )
+            }
+        } )
+
         socket.on( 'disconnect' , function() {
             console.log( " -> Client Disconnected : " + socket.id )
         } )

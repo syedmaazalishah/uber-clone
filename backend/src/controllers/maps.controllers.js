@@ -3,31 +3,6 @@ import * as MapsServices from "../services/maps.google.services.js";
 import { isLength, isNum } from "../middlewares/validator.middleware.js";
 
 
-export async function getAddress ( req , res ) {
-    const { location } = req.body ;
-
-    if ( isNum(location.lng) || isNum(location.lat) ) {
-        return res.json({
-            success : false ,
-            error : "The the valid Co-ordinates."
-        })
-    }
-
-    try {
-        const address = await MapsServices.get_Address( location ) ;
-        return res.json({
-            success : true ,
-            address
-        })
-    } catch (err) {
-        console.log( "Maps Controller (getAddress) Err : " + err.message )
-        return json({
-            success : false ,
-            message : err.message
-        })
-    }
-}
-
 export async function getCoordinates ( req , res ) {
     const { address } = req.body ;
 

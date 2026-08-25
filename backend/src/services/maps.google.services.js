@@ -1,5 +1,6 @@
 import axios from 'axios'
 
+import Captain from '../models/captain.model.js' ;
 
 export async function get_Coordinates ( address ) {
     const apiKey = process.env.GOOGLE_MAPS_API_KEY ;
@@ -22,12 +23,6 @@ export async function get_Coordinates ( address ) {
         throw err
     }
 
-}
-
-export async function get_Address ( { lat , lng } ) {
-
-    
-    
 }
 
 export async function get_Distance_Time ( { origin , destination } ) {
@@ -79,5 +74,19 @@ export async function get_suggestions ( address_query ) {
         console.log( "Maps Service ( getSuggestions ) Err : " + err.message ) ;
         throw err ;
     }
+
+}
+
+export async function get_nearestCaptains (ltd , lng , radius ) {
+    
+    const captains = await Captain.find({
+        location : {
+            $geoWithin : {
+                $centerSphere : [ [ ltd , lng ] , radius / 3963.2 ]
+            }
+        }
+    })
+
+    return captains ;
 
 }
